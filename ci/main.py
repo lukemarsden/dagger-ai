@@ -10,10 +10,6 @@ import subprocess
 async def main():
 
     print("Spawning docker socket forwarder...")
-    try:
-        subprocess.check_call(["pkill", "-f", "socat"])
-    except:
-        pass
     p = subprocess.Popen(["socat", "TCP-LISTEN:12345,reuseaddr,fork,bind=172.17.0.1", "UNIX-CONNECT:/var/run/docker.sock"])
     time.sleep(1)
     print("Done!")
