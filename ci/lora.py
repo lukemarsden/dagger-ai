@@ -14,16 +14,14 @@ IMAGE = "quay.io/lukemarsden/lora:v0.0.2"
 ASSETS = [
     "coke",
     "dagger",
-    # "docker",
-    # "kubernetes",
-    # "nike",
-    # "vision-pro",
+    "docker",
+    "kubernetes",
+    "nike",
+    "vision-pro",
 ]
 PROMPTS = {
-    "mug0": "coffee mug with dagger logo on it, in the style of <s1><s2>",
-    "mug1": "coffee mug with brand logo on it, in the style of <s1><s2>",
-    "mug2": "coffee mug with logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
-    "tshirt": "woman looking at you, wearing tshirt with <s1><s2> logo, happy face, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "mug": "coffee mug with logo on it, in the style of <s1><s2>",
+    "tshirt": "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise",
 }
 
 async def main():
