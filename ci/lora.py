@@ -13,15 +13,15 @@ MODEL_NAME = "runwayml/stable-diffusion-v1-5"
 IMAGE = "quay.io/lukemarsden/lora:v0.0.2"
 ASSETS = [
     "coke",
-    # "dagger",
+    "dagger",
     # "docker",
     # "kubernetes",
     # "nike",
     # "vision-pro",
 ]
 PROMPTS = {
-    "mug": "coffee mug with logo on it, in the style of <s1><s2>",
-    "tshirt": "woman looking at you, wearing tshirt with <s1><s2> logo, happy face, 50mm portrait photography, hard rim lighting photography",
+    "mug": "coffee mug with <s1><s2> logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "tshirt": "woman looking at you, wearing tshirt with <s1><s2> logo, happy face, 50mm portrait photography, hard rim lighting photography, merchandise",
 }
 
 async def main():
@@ -59,109 +59,109 @@ async def main():
         f.write("Hello from Dagger!")
 
     # train the loras
-    # for brand in assets:
-    #     # initialize Dagger client
-    #     async with dagger.Connection(config) as client:
-    #         # fine tune lora
-    #         try:
-    #             python = (
-    #                 client
-    #                     .container()
-    #                     .from_("docker:latest")
-    #                     # break cache
-    #                     # .with_env_variable("BREAK_CACHE", str(time.time()))
-    #                     .with_entrypoint("/usr/local/bin/docker")
-    #                     .with_exec(["-H", "tcp://172.17.0.1:12345",
-    #                         "run", "-i", "--rm", "--gpus", "all",
-    #                         "-v", os.path.join(output_dir, "assets", brand)+":/input",
-    #                         "-v", os.path.join(output_dir, "loras", brand)+":/output",
-    #                         IMAGE,
-    #                         'lora_pti',
-    #                         f'--pretrained_model_name_or_path={MODEL_NAME}',
-    #                         '--instance_data_dir=/input', '--output_dir=/output',
-    #                         '--train_text_encoder', '--resolution=512',
-    #                         '--train_batch_size=1',
-    #                         '--gradient_accumulation_steps=4', '--scale_lr',
-    #                         '--learning_rate_unet=1e-4',
-    #                         '--learning_rate_text=1e-5', '--learning_rate_ti=5e-4',
-    #                         '--color_jitter', '--lr_scheduler="linear"',
-    #                         '--lr_warmup_steps=0',
-    #                         '--placeholder_tokens="<s1>|<s2>"',
-    #                         '--use_template="style"', '--save_steps=100',
-    #                         '--max_train_steps_ti=1000',
-    #                         '--max_train_steps_tuning=1000',
-    #                         '--perform_inversion=True', '--clip_ti_decay',
-    #                         '--weight_decay_ti=0.000', '--weight_decay_lora=0.001',
-    #                         '--continue_inversion', '--continue_inversion_lr=1e-4',
-    #                         '--device="cuda:0"', '--lora_rank=1'
-    #                     ])
-    #             )
-    #             # execute
-    #             err = await python.stderr()
-    #             out = await python.stdout()
-    #             # print stderr
-    #             print(f"Hello from Dagger, fine tune LoRA on {brand}: {out}{err}")
-    #         except Exception as e:
-    #             import pdb; pdb.set_trace()
-    #             print(f"error: {e}")
-
     for brand in ASSETS:
-        for key, prompt in PROMPTS.items():
-            async with dagger.Connection(config) as client:
-                # inference!
+        # initialize Dagger client - no parallelism here
+        async with dagger.Connection(config) as client:
+            # fine tune lora
+            try:
                 python = (
                     client
                         .container()
                         .from_("docker:latest")
+                        # break cache
+                        # .with_env_variable("BREAK_CACHE", str(time.time()))
                         .with_entrypoint("/usr/local/bin/docker")
                         .with_exec(["-H", "tcp://172.17.0.1:12345",
                             "run", "-i", "--rm", "--gpus", "all",
-                            "-v", os.path.join(output_dir, "loras", brand)+":/input",
-                            "-v", os.path.join(output_dir, "inference", brand)+":/output",
+                            "-v", os.path.join(output_dir, "assets", brand)+":/input",
+                            "-v", os.path.join(output_dir, "loras", brand)+":/output",
                             IMAGE,
-                            'python3',
-                            '-c',
-                            # dedent
-                            textwrap.dedent(f"""
-                                from diffusers import StableDiffusionPipeline, EulerAncestralDiscreteScheduler
-                                import torch
-                                from lora_diffusion import tune_lora_scale, patch_pipe
-
-                                model_id = "{MODEL_NAME}"
-
-                                pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to(
-                                    "cuda"
-                                )
-                                pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
-
-                                prompt = "{prompt}"
-                                seed = 0
-                                torch.manual_seed(seed)
-
-                                patch_pipe(
-                                    pipe,
-                                    "/input/final_lora.safetensors",
-                                    patch_text=True,
-                                    patch_ti=True,
-                                    patch_unet=True,
-                                )
-
-                                coeff = 0.5
-                                tune_lora_scale(pipe.unet, coeff)
-                                tune_lora_scale(pipe.text_encoder, coeff)
-
-                                torch.manual_seed(0)
-                                image = pipe(prompt, num_inference_steps=50, guidance_scale=7).images[0]
-                                image.save(f"/output/{key}-{{seed}}.jpg")
-                                image
-                                """)
+                            'lora_pti',
+                            f'--pretrained_model_name_or_path={MODEL_NAME}',
+                            '--instance_data_dir=/input', '--output_dir=/output',
+                            '--train_text_encoder', '--resolution=512',
+                            '--train_batch_size=1',
+                            '--gradient_accumulation_steps=4', '--scale_lr',
+                            '--learning_rate_unet=1e-4',
+                            '--learning_rate_text=1e-5', '--learning_rate_ti=5e-4',
+                            '--color_jitter', '--lr_scheduler="linear"',
+                            '--lr_warmup_steps=0',
+                            '--placeholder_tokens="<s1>|<s2>"',
+                            '--use_template="style"', '--save_steps=100',
+                            '--max_train_steps_ti=1000',
+                            '--max_train_steps_tuning=1000',
+                            '--perform_inversion=True', '--clip_ti_decay',
+                            '--weight_decay_ti=0.000', '--weight_decay_lora=0.001',
+                            '--continue_inversion', '--continue_inversion_lr=1e-4',
+                            '--device="cuda:0"', '--lora_rank=1'
                         ])
                 )
                 # execute
                 err = await python.stderr()
                 out = await python.stdout()
                 # print stderr
-                print(f"Hello from Dagger, inference {brand}, prompt: {prompt} and {out}{err}")
+                print(f"Hello from Dagger, fine tune LoRA on {brand}: {out}{err}")
+            except Exception as e:
+                import pdb; pdb.set_trace()
+                print(f"error: {e}")
+
+    async with dagger.Connection(config) as client:
+        for brand in ASSETS:
+            for key, prompt in PROMPTS.items():
+                for seed in range(10):
+                    # inference!
+                    python = (
+                        client
+                            .container()
+                            .from_("docker:latest")
+                            .with_entrypoint("/usr/local/bin/docker")
+                            .with_exec(["-H", "tcp://172.17.0.1:12345",
+                                "run", "-i", "--rm", "--gpus", "all",
+                                "-v", os.path.join(output_dir, "loras", brand)+":/input",
+                                "-v", os.path.join(output_dir, "inference", brand)+":/output",
+                                IMAGE,
+                                'python3',
+                                '-c',
+                                # dedent
+                                textwrap.dedent(f"""
+                                    from diffusers import StableDiffusionPipeline, EulerAncestralDiscreteScheduler
+                                    import torch
+                                    from lora_diffusion import tune_lora_scale, patch_pipe
+
+                                    model_id = "{MODEL_NAME}"
+
+                                    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to(
+                                        "cuda"
+                                    )
+                                    pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
+
+                                    prompt = "{prompt}"
+                                    seed = {seed}
+                                    torch.manual_seed(seed)
+
+                                    patch_pipe(
+                                        pipe,
+                                        "/input/final_lora.safetensors",
+                                        patch_text=True,
+                                        patch_ti=True,
+                                        patch_unet=True,
+                                    )
+
+                                    coeff = 0.5
+                                    tune_lora_scale(pipe.unet, coeff)
+                                    tune_lora_scale(pipe.text_encoder, coeff)
+
+                                    image = pipe(prompt, num_inference_steps=50, guidance_scale=7).images[0]
+                                    image.save(f"/output/{key}-{{seed}}.jpg")
+                                    image
+                                    """)
+                            ])
+                    )
+                    # execute
+                    err = await python.stderr()
+                    out = await python.stdout()
+                    # print stderr
+                    print(f"Hello from Dagger, inference {brand}, prompt: {prompt} and {out}{err}")
 
     p.terminate()
 
