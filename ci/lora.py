@@ -20,7 +20,8 @@ ASSETS = [
     # "vision-pro",
 ]
 PROMPTS = {
-    "mug": "coffee mug with <s1><s2> logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "mug0": "",
+    "mug1": "coffee mug with logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
     "tshirt": "woman looking at you, wearing tshirt with <s1><s2> logo, happy face, 50mm portrait photography, hard rim lighting photography, merchandise",
 }
 
@@ -106,9 +107,11 @@ async def main():
                 print(f"error: {e}")
 
     async with dagger.Connection(config) as client:
+        stderrs = []
+        stdouts = []
         for brand in ASSETS:
             for key, prompt in PROMPTS.items():
-                for seed in range(10):
+                for seed in range(3):
                     # inference!
                     python = (
                         client
@@ -157,11 +160,16 @@ async def main():
                                     """)
                             ])
                     )
-                    # execute
-                    err = await python.stderr()
-                    out = await python.stdout()
-                    # print stderr
-                    print(f"Hello from Dagger, inference {brand}, prompt: {prompt} and {out}{err}")
+                    stderrs.append(python.stderr())
+                    stdouts.append(python.stdout()) 
+        for s in stderrs:
+            stderr = await s
+            # print stderr
+            print(f"Hello from Dagger, inference {brand}, prompt: {prompt} stderr={stderr}")
+        for s in stdouts:
+            stdout = await s
+            # print stderr
+            print(f"Hello from Dagger, inference {brand}, prompt: {prompt} stderr={stdout}")
 
     p.terminate()
 
