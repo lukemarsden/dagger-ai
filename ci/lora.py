@@ -110,7 +110,7 @@ async def main():
     async with dagger.Connection(config) as client:
         for brand in ASSETS:
             for key, prompt in PROMPTS.items():
-                for seed in range(3):
+                for seed in range(10):
                     # inference!
                     python = (
                         client
