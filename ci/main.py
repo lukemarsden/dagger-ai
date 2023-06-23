@@ -25,7 +25,7 @@ async def main():
                 .from_("docker:latest")
                 .with_env_variable("BREAK_CACHE", str(time.time()))
                 .with_exec(["docker", "-H", "tcp://172.17.0.1:12345",
-                    "run", "--rm", "--runtime=nvidia", "--gpus", "all", "nvidia/cuda:11.6.2-base-ubuntu20.04",
+                    "run", "--rm", "--gpus", "all", "nvidia/cuda:11.6.2-base-ubuntu20.04",
                     "nvidia-smi"])
         )
 
