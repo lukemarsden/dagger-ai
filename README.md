@@ -10,6 +10,8 @@ A Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as
 
 ```
 sudo adduser ubuntu docker
+```
+```
 sudo su - ubuntu
 ```
 
@@ -24,8 +26,14 @@ TODO: remove need for socat...
 
 ```
 sudo apt install -y socat python3.10-venv
+```
+```
 python3.10 -m virtualenv venv
+```
+```
 . venv/bin/activate
+```
+```
 curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 ```
 
