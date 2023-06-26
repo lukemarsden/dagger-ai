@@ -1,4 +1,4 @@
-# Fine-tuning Stable Diffusion using LoRA
+# Fine-tuning Stable Diffusion using [LoRA](https://github.com/cloneofsimo/lora)
 
 * Go to lambdalabs.com
 * Get an instance (e.g. A100 or A10)
