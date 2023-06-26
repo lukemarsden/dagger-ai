@@ -2,18 +2,18 @@
 # zipfiles the script will download
 brands:
  - coke
- - dagger
- - docker
- - kubernetes
- - nike
- - vision-pro
+# - dagger
+# - docker
+# - kubernetes
+# - nike
+# - vision-pro
 
 # the prompts for each brand, adjust these to generate different images
 prompts:
   mug: "coffee mug with logo on it, in the style of <s1><s2>"
-  mug2: "coffee mug with brand logo on it, in the style of <s1><s2>"
-  mug3: "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise"
-  tshirt: "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise"
+#  mug2: "coffee mug with brand logo on it, in the style of <s1><s2>"
+#  mug3: "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise"
+#  tshirt: "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise"
 
 # how many images to generate for each prompt for each brand
 num_images: 10
