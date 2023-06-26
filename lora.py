@@ -63,10 +63,6 @@ async def main():
         with zipfile.ZipFile(os.path.join(output_dir, "downloads", f"{brand}.zip"), 'r') as zip_ref:
             zip_ref.extractall(os.path.join(output_dir, "assets"))
 
-    # write hello.txt to tmp directory
-    with open(os.path.join(output_dir, "hello.txt"), "w") as f:
-        f.write("Hello from Dagger!")
-
     # train the loras
     for brand in ASSETS:
         # initialize Dagger client - no parallelism here
