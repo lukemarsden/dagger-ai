@@ -22,8 +22,6 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 ```
 Press enter to install the PPA.
 
-TODO: remove need for socat...
-
 ```
 sudo apt install -y socat python3.10-venv
 ```
