@@ -56,7 +56,7 @@ async def main():
     for brand in ASSETS:
         # http download storage.googleapis.com/dagger-assets/dagger.zip
         urllib.request.urlretrieve(
-            URL_PREFIX + "/" + brand + ".zip",
+            URL_PREFIX + brand + ".zip",
             os.path.join(output_dir, "downloads", f"{brand}.zip"),
         )
         # unzip with zipfile module

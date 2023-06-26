@@ -20,6 +20,7 @@ num_images: 10
 
 # the script expects zip files to download from "{url_prefix}/{brand}.zip", e.g. https://storage.googleapis.com/dagger-assets/coke.zip
 # the zip file must just contain the images to fine tune the model on, filenames don't seem to matter
+# **must have trailing slash**
 url_prefix: https://storage.googleapis.com/dagger-assets/
 
 # you shouldn't need to change this (and note that doing so will break the
