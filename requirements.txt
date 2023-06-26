@@ -1,1 +1,2 @@
 dagger-io==0.6.2
+PyYAML==6.0
