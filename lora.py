@@ -8,25 +8,30 @@ import subprocess
 import urllib.request
 import zipfile
 import textwrap
+import yaml
 
-MODEL_NAME = "runwayml/stable-diffusion-v1-5"
-IMAGE = "quay.io/lukemarsden/lora:v0.0.2"
-ASSETS = [
+# Load from config.yml
+config = yaml.load(open("config.yml", "r"))
+
+MODEL_NAME = config.get("model_name", "runwayml/stable-diffusion-v1-5")
+IMAGE = config.get("container_image", "quay.io/lukemarsden/lora:v0.0.2")
+ASSETS = config.get("brands", [
     "coke",
     "dagger",
     "docker",
     "kubernetes",
     "nike",
     "vision-pro",
-]
-PROMPTS = {
+])
+PROMPTS = config.get("prompts", {
     "mug": "coffee mug with logo on it, in the style of <s1><s2>",
     "mug2": "coffee mug with brand logo on it, in the style of <s1><s2>",
     "mug3": "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
     "tshirt": "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise",
-}
-NUM_IMAGES = 10
-URL_PREFIX = "https://storage.googleapis.com/dagger-assets/"
+})
+NUM_IMAGES = config.get("num_images", 10)
+URL_PREFIX = config.get("url_prefix", "https://storage.googleapis.com/dagger-assets/")
+COEFF = config.get("finetune_weighting", 0.5)
 
 async def main():
 
@@ -151,7 +156,7 @@ async def main():
                                         patch_unet=True,
                                     )
 
-                                    coeff = 0.5
+                                    coeff = {COEFF}
                                     tune_lora_scale(pipe.unet, coeff)
                                     tune_lora_scale(pipe.text_encoder, coeff)
 

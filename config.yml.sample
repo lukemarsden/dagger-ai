@@ -1,0 +1,30 @@
+# the name of the brands (short human readable name), corresponds to the
+# zipfiles the script will download
+brands:
+ - coke
+ - dagger
+ - docker
+ - kubernetes
+ - nike
+ - vision-pro
+
+# the prompts for each brand, adjust these to generate different images
+prompts:
+  mug: "coffee mug with logo on it, in the style of <s1><s2>"
+  mug2: "coffee mug with brand logo on it, in the style of <s1><s2>"
+  mug3: "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise"
+  tshirt: "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise"
+
+# how many images to generate for each prompt for each brand
+num_images: 10
+
+# the script expects zip files to download from "{url_prefix}/{brand}.zip", e.g. https://storage.googleapis.com/dagger-assets/coke.zip
+# the zip file must just contain the images to fine tune the model on, filenames don't seem to matter
+url_prefix: https://storage.googleapis.com/dagger-assets/
+
+# you shouldn't need to change this (and note that doing so will break the
+# caching, see Dockerfile)
+model_name: runwayml/stable-diffusion-v1-5
+
+# container image built from the Dockerfile in this repo
+container_image: quay.io/lukemarsden/lora:v0.0.2
