@@ -1,6 +1,8 @@
 # 🌸 Fine-tuning Stable Diffusion using [LoRA](https://github.com/cloneofsimo/lora) with Dagger
 
-A Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as (python) code
+This example shows how to create brand assets for merchandise from some screenshots of a brand's website.
+
+It's implemented as a Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as (python) code.
 
 * Go to [lambdalabs.com](https://lambdalabs.com), or any other GPU provider of your choice (the instructions below were tested on Lambda)
 * Get an instance (e.g. A100 or A10). Min GPU memory is 16GB, tested on 24GB
