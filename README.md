@@ -70,7 +70,7 @@ Back in the first terminal, run:
 dagger run python lora.py
 ```
 
-Now go and have lunch while you pull docker images & train some LoRAs :-)
+Now go and have lunch while you pull docker images & train some LoRAs 😊
 
 ...
 
