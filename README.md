@@ -71,8 +71,10 @@ Now go and have lunch while you train some LoRAs :-)
 
 Welcome back, check out outputs/inferences to see the results!
 
-# 🏃 Observe the dagger cache making things faster
+## 🏃 Observe the dagger cache making things faster
 
 Now uncomment some of the prompts or brands in the config.yml and re-run, note how the Dagger cache saves you from having to redo any work that it's already done!
 
-# 💸 Remember to shut down your GPU if you like keeping your money!
+## 💸 Remember to shut down your GPU
+
+If you like keeping your money!
