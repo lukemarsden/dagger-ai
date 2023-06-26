@@ -4,7 +4,7 @@ A Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as
 
 * Go to [lambdalabs.com](https://lambdalabs.com), or any other GPU provider of your choice (the instructions below were tested on Lambda)
 * Get an instance (e.g. A100 or A10). Min GPU memory is 16GB, tested on 24GB
-* Hit up Jupyter (or SSH in, but Jupyter makes viewing the outputs easier :-))
+* Hit up Jupyter (or SSH in, but Jupyter makes viewing the outputs easier 😊)
 
 ## 🐋 New terminal, add user to docker group
 
