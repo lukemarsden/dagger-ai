@@ -73,7 +73,7 @@ Welcome back, check out `output/inference` to see the results!
 
 ## 🏃 Observe the dagger cache making things faster
 
-Now uncomment some of the prompts or brands in the config.yml and re-run, note how the Dagger cache saves you from having to redo any work that it's already done!
+Now uncomment some of the prompts and/or brands in the `config.yml` and re-run, note how the Dagger cache saves you from having to redo any work that it's already done!
 
 ## 💸 Remember to shut down your GPU
 
