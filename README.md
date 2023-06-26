@@ -1,6 +1,8 @@
 # 🌸 Fine-tuning Stable Diffusion using [LoRA](https://github.com/cloneofsimo/lora) with Dagger
 
-This example shows how to create brand assets for merchandise from some screenshots of a brand's website.
+This example shows how to create brand assets for merchandise from some screenshots of a brand's website:
+
+![dagger-stable-diffusion-lora](https://github.com/lukemarsden/dagger-stable-diffusion-lora/assets/264658/f35b83f4-c404-46db-a384-3915c1bdfc20)
 
 It's implemented as a Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as (python) code.
 
