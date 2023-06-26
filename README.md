@@ -65,9 +65,11 @@ Now open `dagger-stable-diffusion-lora/config.yml` in the Jupyter editor and cha
 dagger run python lora.py
 ```
 
-Now go and have lunch while you train some LoRAs :-)
+Now go and have lunch while you pull docker images & train some LoRAs :-)
 
 ...
+
+If you're curious to watch the progress, in another terminal tab, do `sudo docker ps` and `sudo docker logs -f <container_id>` for some of the running jobs.
 
 Welcome back, check out `output/inference` to see the results!
 
