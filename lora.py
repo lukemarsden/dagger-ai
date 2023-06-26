@@ -25,6 +25,8 @@ PROMPTS = {
     "mug3": "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
     "tshirt": "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise",
 }
+NUM_IMAGES = 10
+URL_PREFIX = "https://storage.googleapis.com/dagger-assets/"
 
 async def main():
 
@@ -49,7 +51,7 @@ async def main():
     for brand in ASSETS:
         # http download storage.googleapis.com/dagger-assets/dagger.zip
         urllib.request.urlretrieve(
-            f"https://storage.googleapis.com/dagger-assets/{brand}.zip",
+            URL_PREFIX + "/" + brand + ".zip",
             os.path.join(output_dir, "downloads", f"{brand}.zip"),
         )
         # unzip with zipfile module
@@ -69,7 +71,7 @@ async def main():
                 python = (
                     client
                         .container()
-                        .from_("docker:latest")
+                        .from_("docker:latest") # TODO: use '@sha256:...'
                         # break cache
                         # .with_env_variable("BREAK_CACHE", str(time.time()))
                         .with_entrypoint("/usr/local/bin/docker")
@@ -110,7 +112,7 @@ async def main():
     async with dagger.Connection(config) as client:
         for brand in ASSETS:
             for key, prompt in PROMPTS.items():
-                for seed in range(10):
+                for seed in range(NUM_IMAGES):
                     # inference!
                     python = (
                         client
