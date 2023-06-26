@@ -57,7 +57,7 @@ pip install -r requirements.txt
 cp config.yml.sample config.yml
 ```
 
-Now open config.yml in the Jupyter editor and change anything you like.
+Now open `dagger-stable-diffusion-lora/config.yml` in the Jupyter editor and change anything you like.
 
 ## 🚂 Train some LoRAs!
 
@@ -69,7 +69,7 @@ Now go and have lunch while you train some LoRAs :-)
 
 ...
 
-Welcome back, check out outputs/inferences to see the results!
+Welcome back, check out `output/inference` to see the results!
 
 ## 🏃 Observe the dagger cache making things faster
 
