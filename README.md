@@ -1,6 +1,8 @@
-# Fine-tuning Stable Diffusion using [LoRA](https://github.com/cloneofsimo/lora)
+# Fine-tuning Stable Diffusion using [LoRA](https://github.com/cloneofsimo/lora) with Dagger
 
-* Go to lambdalabs.com
+A Stable Diffusion LoRA pipeline using Dagger.io: pipelines as (python) code
+
+* Go to [lambdalabs.com](https://lambdalabs.com)
 * Get an instance (e.g. A100 or A10)
 * Hit up Jupyter (or SSH in, but Jupyter makes viewing the outputs easier :-))
 
