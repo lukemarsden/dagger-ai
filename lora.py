@@ -11,7 +11,7 @@ import textwrap
 import yaml
 
 # Load from config.yml
-config = yaml.load(open("config.yml", "r"))
+config = yaml.load(open("config.yml", "r"), Loader=yaml.FullLoader)
 
 MODEL_NAME = config.get("model_name", "runwayml/stable-diffusion-v1-5")
 IMAGE = config.get("container_image", "quay.io/lukemarsden/lora:v0.0.2")
