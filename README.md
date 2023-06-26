@@ -61,6 +61,7 @@ Now open `dagger-stable-diffusion-lora/config.yml` in the Jupyter editor and cha
 
 ## 🚂 Train some LoRAs!
 
+Back in the first terminal, run:
 ```
 dagger run python lora.py
 ```
