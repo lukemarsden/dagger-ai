@@ -2,7 +2,7 @@
 
 This example shows how to create brand assets for merchandise from some screenshots of a brand's website:
 
-![dagger-stable-diffusion-lora](https://github.com/lukemarsden/dagger-stable-diffusion-lora/assets/264658/f35b83f4-c404-46db-a384-3915c1bdfc20)
+![dagger-stable-diffusion-lora](https://github.com/lukemarsden/dagger-stable-diffusion-lora/assets/264658/071001b9-6873-45b4-8e46-c6f924ef8b33)
 
 It's implemented as a Stable Diffusion LoRA pipeline using [Dagger](https://dagger.io): pipelines as (python) code.
 
