@@ -27,7 +27,7 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 Press enter to install the PPA.
 
 ```
-sudo apt install -y socat python3.10-venv
+sudo apt install -y python3.10-venv
 ```
 ```
 python3.10 -m virtualenv venv
