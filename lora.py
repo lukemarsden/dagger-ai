@@ -35,7 +35,7 @@ COEFF = config.get("finetune_weighting", 0.5)
 
 async def main():
 
-    docker_socket_path = os.environ.get("DOCKER_HOST", default="unix:///var/run/docker.sock")
+    docker_socket_path = os.environ.get("DOCKER_HOST", default="/var/run/docker.sock")
     docker_host_prefix = "unix://"
     if docker_socket_path.startswith(docker_host_prefix):
         docker_socket_path = docker_socket_path[len(docker_host_prefix):]
@@ -68,7 +68,6 @@ async def main():
         # initialize Dagger client - no parallelism here
         async with dagger.Connection(config) as client:
             docker_socket = client.host().unix_socket(docker_socket_path)
-            print(docker_socket_path)
 
             # fine tune lora
             try:
