@@ -35,10 +35,10 @@ COEFF = config.get("finetune_weighting", 0.5)
 
 async def main():
 
-    print("Spawning docker socket forwarder...")
-    p = subprocess.Popen(["socat", "TCP-LISTEN:12345,reuseaddr,fork,bind=172.17.0.1", "UNIX-CONNECT:/var/run/docker.sock"])
-    time.sleep(1)
-    print("Done!")
+    docker_socket_path = os.environ.get("DOCKER_HOST", default="/var/run/docker.sock")
+    docker_host_prefix = "unix://"
+    if docker_socket_path.startswith(docker_host_prefix):
+        docker_socket_path = docker_socket_path[len(docker_host_prefix):]
 
     config = dagger.Config(log_output=sys.stdout)
 
@@ -67,6 +67,8 @@ async def main():
     for brand in ASSETS:
         # initialize Dagger client - no parallelism here
         async with dagger.Connection(config) as client:
+            docker_socket = client.host().unix_socket(docker_socket_path)
+
             # fine tune lora
             try:
                 python = (
@@ -76,8 +78,8 @@ async def main():
                         # break cache
                         # .with_env_variable("BREAK_CACHE", str(time.time()))
                         .with_entrypoint("/usr/local/bin/docker")
-                        .with_exec(["-H", "tcp://172.17.0.1:12345",
-                            "run", "-i", "--rm", "--gpus", "all",
+                        .with_unix_socket("/var/run/docker.sock", docker_socket)
+                        .with_exec(["run", "-i", "--rm", "--gpus", "all",
                             "-v", os.path.join(output_dir, "assets", brand)+":/input",
                             "-v", os.path.join(output_dir, "loras", brand)+":/output",
                             IMAGE,
@@ -120,8 +122,8 @@ async def main():
                             .container()
                             .from_("docker:latest")
                             .with_entrypoint("/usr/local/bin/docker")
-                            .with_exec(["-H", "tcp://172.17.0.1:12345",
-                                "run", "-i", "--rm", "--gpus", "all",
+                            .with_unix_socket("/var/run/docker.sock", docker_socket)
+                            .with_exec(["run", "-i", "--rm", "--gpus", "all",
                                 "-v", os.path.join(output_dir, "loras", brand)+":/input",
                                 "-v", os.path.join(output_dir, "inference", brand)+":/output",
                                 IMAGE,
@@ -167,7 +169,5 @@ async def main():
                     out = await python.stdout()
                     # print stderr
                     print(f"Hello from Dagger, inference {brand}, prompt: {prompt} and {out}{err}")
-
-    p.terminate()
 
 anyio.run(main)
