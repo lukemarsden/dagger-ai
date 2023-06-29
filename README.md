@@ -67,6 +67,7 @@ Now open `dagger-stable-diffusion-lora/config.yml` in the Jupyter editor and cha
 
 Back in the first terminal, run:
 ```
+export _EXPERIMENTAL_DAGGER_INTERACTIVE_TUI=1
 dagger run python lora.py
 ```
 
