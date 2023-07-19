@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.2-base-ubuntu20.04
+FROM nvidia/cuda:11.6.2-base-ubuntu20.04
 
 # Install lora and pre-cache stable diffusion 1.5 model to avoid re-downloading
 # it for every inference.
