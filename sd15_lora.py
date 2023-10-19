@@ -24,7 +24,7 @@ ASSETS = config.get("brands", [
     "vision-pro",
 ])
 PROMPTS = config.get("prompts", {
-    "mug": "coffee mug with logo on it, in the style of <s1><s2>",
+    "mug": "photograph of a coffee mug with logo on it, in the style of <s1><s2>",
     "mug2": "coffee mug with brand logo on it, in the style of <s1><s2>",
     "mug3": "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
     "tshirt": "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise",

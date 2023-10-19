@@ -11,27 +11,26 @@ import textwrap
 import yaml
 
 # Load from config.yml
-config = yaml.load(open("config.yml", "r"), Loader=yaml.FullLoader)
+config = yaml.load(open("config_sdxl.yml", "r"), Loader=yaml.FullLoader)
 
-MODEL_NAME = config.get("model_name", "runwayml/stable-diffusion-v1-5")
-IMAGE = config.get("container_image", "quay.io/lukemarsden/lora:v0.0.2")
+IMAGE = config.get("container_image", "quay.io/lukemarsden/sd-scripts:v0.0.3")
 ASSETS = config.get("brands", [
-    "coke",
+    # "coke",
     "dagger",
-    "docker",
-    "kubernetes",
-    "nike",
-    "vision-pro",
+    # "docker",
+    # "kubernetes",
+    # "nike",
+    # "vision-pro",
 ])
 PROMPTS = config.get("prompts", {
-    "mug": "coffee mug with logo on it, in the style of <s1><s2>",
-    "mug2": "coffee mug with brand logo on it, in the style of <s1><s2>",
-    "mug3": "coffee mug with brand logo on it, in the style of <s1><s2>, 50mm portrait photography, hard rim lighting photography, merchandise",
-    "tshirt": "woman torso wearing tshirt with <s1><s2> logo, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "mug": "coffee mug with logo on it",
+    "mug2": "coffee mug with astronauts on mars on it",
+    "mug3": "coffee mug with brand logo on it, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "tshirt": "woman torso wearing logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise",
 })
 NUM_IMAGES = config.get("num_images", 10)
 URL_PREFIX = config.get("url_prefix", "https://storage.googleapis.com/dagger-assets/")
-COEFF = config.get("finetune_weighting", 0.5)
+COEFF = config.get("finetune_weighting", 0.8)
 
 async def main():
 
@@ -54,14 +53,27 @@ async def main():
     os.makedirs(os.path.join(output_dir, "inference"), exist_ok=True)
 
     for brand in ASSETS:
-        # http download storage.googleapis.com/dagger-assets/dagger.zip
+        # http download storage.googleapis.com/dagger-assets/sdxl_dagger.zip (the sdxl_prefixed ones have .txt file captions in there)
         urllib.request.urlretrieve(
-            URL_PREFIX + brand + ".zip",
+            URL_PREFIX + "sdxl_" + brand + ".zip",
             os.path.join(output_dir, "downloads", f"{brand}.zip"),
         )
         # unzip with zipfile module
         with zipfile.ZipFile(os.path.join(output_dir, "downloads", f"{brand}.zip"), 'r') as zip_ref:
             zip_ref.extractall(os.path.join(output_dir, "assets"))
+
+    open(os.path.join(output_dir, "config.toml"), "w").write("""[general]
+enable_bucket = true                        # Whether to use Aspect Ratio Bucketing
+
+[[datasets]]
+resolution = 1024                           # Training resolution
+batch_size = 4                              # Batch size
+
+  [[datasets.subsets]]
+  image_dir = '/input'                      # Specify the folder containing the training images
+  caption_extension = '.txt'                # Caption file extension; change this if using .txt
+  num_repeats = 10                          # Number of repetitions for training images
+""")
 
     # train the loras
     for brand in ASSETS:
@@ -74,31 +86,34 @@ async def main():
                         .container()
                         .from_("docker:latest") # TODO: use '@sha256:...'
                         # break cache
-                        # .with_env_variable("BREAK_CACHE", str(time.time()))
+                        .with_env_variable("BREAK_CACHE", str(time.time()))
                         .with_entrypoint("/usr/local/bin/docker")
                         .with_exec(["-H", "tcp://172.17.0.1:12345",
-                            "run", "-i", "--rm", "--gpus", "all",
-                            "-v", os.path.join(output_dir, "assets", brand)+":/input",
+                            "run", "--workdir", "/app/sd-scripts",
+                            "-i", "--rm", "--gpus", "all",
+                            "-v", os.path.join(output_dir, "config.toml")+":/config.toml",
+                            "-v", os.path.join(output_dir, "assets", "sdxl_" + brand)+":/input", # the sdxl_ was inside the zipfile
                             "-v", os.path.join(output_dir, "loras", brand)+":/output",
                             IMAGE,
-                            'lora_pti',
-                            f'--pretrained_model_name_or_path={MODEL_NAME}',
-                            '--instance_data_dir=/input', '--output_dir=/output',
-                            '--train_text_encoder', '--resolution=512',
-                            '--train_batch_size=1',
-                            '--gradient_accumulation_steps=4', '--scale_lr',
-                            '--learning_rate_unet=1e-4',
-                            '--learning_rate_text=1e-5', '--learning_rate_ti=5e-4',
-                            '--color_jitter', '--lr_scheduler="linear"',
-                            '--lr_warmup_steps=0',
-                            '--placeholder_tokens="<s1>|<s2>"',
-                            '--use_template="style"', '--save_steps=100',
-                            '--max_train_steps_ti=1000',
-                            '--max_train_steps_tuning=1000',
-                            '--perform_inversion=True', '--clip_ti_decay',
-                            '--weight_decay_ti=0.000', '--weight_decay_lora=0.001',
-                            '--continue_inversion', '--continue_inversion_lr=1e-4',
-                            '--device="cuda:0"', '--lora_rank=1'
+
+                            "accelerate", "launch", "--num_cpu_threads_per_process", "1", "sdxl_train_network.py",
+                                "--pretrained_model_name_or_path=./sdxl/sd_xl_base_1.0.safetensors",
+                                "--dataset_config=/config.toml",
+                                "--output_dir=/output",
+                                "--output_name=lora",
+                                "--save_model_as=safetensors",
+                                "--prior_loss_weight=1.0",
+                                "--max_train_steps=400",
+                                "--vae=madebyollin/sdxl-vae-fp16-fix",
+                                "--learning_rate=1e-4",
+                                "--optimizer_type='AdamW8bit'",
+                                "--xformers",
+                                "--mixed_precision='fp16'",
+                                "--cache_latents",
+                                "--gradient_checkpointing",
+                                "--save_every_n_epochs=1",
+                                "--network_module=networks.lora",
+
                         ])
                 )
                 # execute
@@ -119,47 +134,20 @@ async def main():
                         client
                             .container()
                             .from_("docker:latest")
+                            .with_env_variable("BREAK_CACHE", str(time.time()))
                             .with_entrypoint("/usr/local/bin/docker")
                             .with_exec(["-H", "tcp://172.17.0.1:12345",
-                                "run", "-i", "--rm", "--gpus", "all",
+                                "run", "--workdir", "/app/sd-scripts",
+                                "-i", "--rm", "--gpus", "all",
                                 "-v", os.path.join(output_dir, "loras", brand)+":/input",
                                 "-v", os.path.join(output_dir, "inference", brand)+":/output",
                                 IMAGE,
-                                'python3',
-                                '-c',
-                                # dedent
-                                textwrap.dedent(f"""
-                                    from diffusers import StableDiffusionPipeline, EulerAncestralDiscreteScheduler
-                                    import torch
-                                    from lora_diffusion import tune_lora_scale, patch_pipe
 
-                                    model_id = "{MODEL_NAME}"
-
-                                    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to(
-                                        "cuda"
-                                    )
-                                    pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
-
-                                    prompt = "{prompt}"
-                                    seed = {seed}
-                                    torch.manual_seed(seed)
-
-                                    patch_pipe(
-                                        pipe,
-                                        "/input/final_lora.safetensors",
-                                        patch_text=True,
-                                        patch_ti=True,
-                                        patch_unet=True,
-                                    )
-
-                                    coeff = {COEFF}
-                                    tune_lora_scale(pipe.unet, coeff)
-                                    tune_lora_scale(pipe.text_encoder, coeff)
-
-                                    image = pipe(prompt, num_inference_steps=50, guidance_scale=7).images[0]
-                                    image.save(f"/output/{key}-{{seed}}.jpg")
-                                    image
-                                    """)
+                                "accelerate", "launch", "--num_cpu_threads_per_process", "1", "sdxl_minimal_inference.py",
+                                    "--ckpt_path=sdxl/sd_xl_base_1.0.safetensors",
+                                    f"--lora_weights=/input/lora.safetensors;{COEFF}", 
+                                    f'--prompt="{prompt}"',
+                                    "--output_dir=/output",
                             ])
                     )
                     # execute

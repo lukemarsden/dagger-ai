@@ -1,0 +1,25 @@
+# the name of the brands (short human readable name), corresponds to the
+# zipfiles the script will download
+brands:
+#  - coke
+- dagger
+# - docker
+# - kubernetes
+# - nike
+# - vision-pro
+
+# the prompts for each brand, adjust these to generate different images
+prompts:
+  mug: "coffee mug with logo on it"
+  mug2: "coffee mug with astronauts on mars on it"
+  mug3: "coffee mug with brand logo on it, 50mm portrait photography, hard rim lighting photography, merchandise"
+  tshirt: "woman torso wearing logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise"
+
+# how many images to generate for each prompt for each brand
+num_images: 10
+
+# the script expects zip files to download from "{url_prefix}/sdxl_{brand}.zip", e.g. https://storage.googleapis.com/dagger-assets/sdxl_coke.zip
+# the zip file must just contain the images to fine tune the model on, and for each image file foo.jpg a foo.txt file containing a descriptive caption of the image
+# you will then be able to reuse the language in the captions in the trained model when prompting it for inference
+# **must have trailing slash**
+url_prefix: https://storage.googleapis.com/dagger-assets/
