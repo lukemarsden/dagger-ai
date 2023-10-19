@@ -1,19 +1,20 @@
 # the name of the brands (short human readable name), corresponds to the
 # zipfiles the script will download
 brands:
-#  - coke
 - dagger
+# - coke
 # - docker
 # - kubernetes
 # - nike
 # - vision-pro
 
 # the prompts for each brand, adjust these to generate different images
+# note with SDXL you should reference words and phrases you used in the captions for best effect
 prompts:
-  mug: "coffee mug with logo on it"
-  mug2: "coffee mug with astronauts on mars on it"
-  mug3: "coffee mug with brand logo on it, 50mm portrait photography, hard rim lighting photography, merchandise"
-  tshirt: "woman torso wearing logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise"
+  mug: "coffee mug with dagger logo on it"
+  mug2: "coffee mug with astronauts on mars on it holding a map"
+  mug3: "coffee mug with dagger logo on it, 50mm portrait photography, hard rim lighting photography, merchandise"
+  tshirt: "woman torso wearing dagger logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise"
 
 # how many images to generate for each prompt for each brand
 num_images: 10

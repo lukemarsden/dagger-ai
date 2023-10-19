@@ -23,10 +23,10 @@ ASSETS = config.get("brands", [
     # "vision-pro",
 ])
 PROMPTS = config.get("prompts", {
-    "mug": "coffee mug with logo on it",
-    "mug2": "coffee mug with astronauts on mars on it",
-    "mug3": "coffee mug with brand logo on it, 50mm portrait photography, hard rim lighting photography, merchandise",
-    "tshirt": "woman torso wearing logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "mug": "coffee mug with dagger logo on it",
+    "mug2": "coffee mug with astronauts on mars on it holding a map",
+    "mug3": "coffee mug with dagger logo on it, 50mm portrait photography, hard rim lighting photography, merchandise",
+    "tshirt": "woman torso wearing dagger logo tshirt, 50mm portrait photography, hard rim lighting photography, merchandise",
 })
 NUM_IMAGES = config.get("num_images", 10)
 URL_PREFIX = config.get("url_prefix", "https://storage.googleapis.com/dagger-assets/")
@@ -81,16 +81,9 @@ batch_size = 4                              # Batch size
         async with dagger.Connection(config) as client:
             # fine tune lora
             try:
-                python = (
-                    client
-                        .container()
-                        .from_("docker:latest") # TODO: use '@sha256:...'
-                        # break cache
-                        # .with_env_variable("BREAK_CACHE", str(time.time()))
-                        .with_entrypoint("/usr/local/bin/docker")
-                        .with_exec(["-H", "tcp://172.17.0.1:12345",
-                            "run", "--workdir", "/app/sd-scripts",
-                            "-i", "--rm", "--gpus", "all",
+                args = ["-H", "tcp://172.17.0.1:12345",
+                            "run",
+                            "--rm", "--gpus", "all",
                             "-v", os.path.join(output_dir, "config.toml")+":/config.toml",
                             "-v", os.path.join(output_dir, "assets", "sdxl_" + brand)+":/input", # the sdxl_ was inside the zipfile
                             "-v", os.path.join(output_dir, "loras", brand)+":/output",
@@ -106,15 +99,26 @@ batch_size = 4                              # Batch size
                                 "--max_train_steps=400",
                                 "--vae=madebyollin/sdxl-vae-fp16-fix",
                                 "--learning_rate=1e-4",
-                                "--optimizer_type='AdamW8bit'",
+                                "--optimizer_type=AdamW8bit",
                                 "--xformers",
-                                "--mixed_precision='fp16'",
+                                "--mixed_precision=fp16",
                                 "--cache_latents",
                                 "--gradient_checkpointing",
                                 "--save_every_n_epochs=1",
                                 "--network_module=networks.lora",
 
-                        ])
+                        ]
+                print("RUNNING:", " ".join(args))
+                python = (
+                    client
+                        .container()
+                        .from_("docker:latest") # TODO: use '@sha256:...'
+                        # break cache
+                        # .with_env_variable("BREAK_CACHE", str(time.time()))
+                        # .with_entrypoint("/usr/local/bin/docker")
+                        .with_entrypoint("/bin/sh")
+                        .with_exec(["-c", "docker " + " ".join(args)])
+                        # .with_exec(args)
                 )
                 # execute
                 err = await python.stderr()
@@ -137,7 +141,7 @@ batch_size = 4                              # Batch size
                             # .with_env_variable("BREAK_CACHE", str(time.time()))
                             .with_entrypoint("/usr/local/bin/docker")
                             .with_exec(["-H", "tcp://172.17.0.1:12345",
-                                "run", "--workdir", "/app/sd-scripts",
+                                "run",
                                 "-i", "--rm", "--gpus", "all",
                                 "-v", os.path.join(output_dir, "loras", brand)+":/input",
                                 "-v", os.path.join(output_dir, "inference", brand)+":/output",
