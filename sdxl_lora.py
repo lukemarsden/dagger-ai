@@ -82,10 +82,10 @@ batch_size = 4                              # Batch size
             # fine tune lora
             try:
                 args = ["-H", "tcp://172.17.0.1:12345",
-                            "run",
+                            "run", "-i",
                             "--rm", "--gpus", "all",
                             "-v", os.path.join(output_dir, "config.toml")+":/config.toml",
-                            "-v", os.path.join(output_dir, "assets", "sdxl_" + brand)+":/input", # the sdxl_ was inside the zipfile
+                            "-v", os.path.join(output_dir, "assets", brand)+":/input",
                             "-v", os.path.join(output_dir, "loras", brand)+":/output",
                             IMAGE,
 
@@ -114,7 +114,7 @@ batch_size = 4                              # Batch size
                         .container()
                         .from_("docker:latest") # TODO: use '@sha256:...'
                         # break cache
-                        # .with_env_variable("BREAK_CACHE", str(time.time()))
+                        .with_env_variable("BREAK_CACHE", brand)
                         # .with_entrypoint("/usr/local/bin/docker")
                         .with_entrypoint("/bin/sh")
                         .with_exec(["-c", "docker " + " ".join(args)])
@@ -149,7 +149,7 @@ batch_size = 4                              # Batch size
 
                                 "accelerate", "launch", "--num_cpu_threads_per_process", "1", "sdxl_minimal_inference.py",
                                     "--ckpt_path=sdxl/sd_xl_base_1.0.safetensors",
-                                    f"--lora_weights=/input/lora.safetensors;{COEFF}", 
+                                    f'--lora_weights="/input/lora.safetensors;{COEFF}"', 
                                     f'--prompt="{prompt}"',
                                     "--output_dir=/output",
                             ])
