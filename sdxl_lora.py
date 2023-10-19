@@ -149,8 +149,8 @@ batch_size = 4                              # Batch size
 
                                 "accelerate", "launch", "--num_cpu_threads_per_process", "1", "sdxl_minimal_inference.py",
                                     "--ckpt_path=sdxl/sd_xl_base_1.0.safetensors",
-                                    f'--lora_weights="/input/lora.safetensors;{COEFF}"', 
-                                    f'--prompt="{prompt}"',
+                                    f'--lora_weights=/input/lora.safetensors;{COEFF}', 
+                                    f'--prompt={prompt}',
                                     "--output_dir=/output",
                             ])
                     )
