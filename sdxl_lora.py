@@ -86,7 +86,7 @@ batch_size = 4                              # Batch size
                         .container()
                         .from_("docker:latest") # TODO: use '@sha256:...'
                         # break cache
-                        .with_env_variable("BREAK_CACHE", str(time.time()))
+                        # .with_env_variable("BREAK_CACHE", str(time.time()))
                         .with_entrypoint("/usr/local/bin/docker")
                         .with_exec(["-H", "tcp://172.17.0.1:12345",
                             "run", "--workdir", "/app/sd-scripts",
@@ -134,7 +134,7 @@ batch_size = 4                              # Batch size
                         client
                             .container()
                             .from_("docker:latest")
-                            .with_env_variable("BREAK_CACHE", str(time.time()))
+                            # .with_env_variable("BREAK_CACHE", str(time.time()))
                             .with_entrypoint("/usr/local/bin/docker")
                             .with_exec(["-H", "tcp://172.17.0.1:12345",
                                 "run", "--workdir", "/app/sd-scripts",
