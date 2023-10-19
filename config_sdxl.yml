@@ -11,13 +11,17 @@ brands:
 # the prompts for each brand, adjust these to generate different images
 # note with SDXL you should reference words and phrases you used in the captions for best effect
 prompts:
-  img1: "cj hole for sale sign outside a posh detached house with a tesla"
-  img2: "cj hole sold sign outside a council house with a vw beetle"
-  img3: "cj hole for sale sign outside a detached house with a flying pig in the sky"
-  img4: "cj hole for sale sign outside a haunted council house"
+  img1: "cj hole for sale sign in front of a posh house with a tesla in winter with snow"
+  img2: "cj hole sold sign in front of a council house with a vw beetle in spring with daffodills"
+  img3: "cj hole for sale sign in front of a detached house in summer with a bbq in the front garden"
+  img4: "cj hole for sale sign in front of a posh house, with spider webs and halloween decorations"
+  img5: "cj hole for sale sign in front of a detached house with christmas decorations"
 
 # how many images to generate for each prompt for each brand
 num_images: 1
+
+# how much emphasis to place on the finetune set
+finetune_weighting: 0.8
 
 # the script expects zip files to download from "{url_prefix}/sdxl_{brand}.zip", e.g. https://storage.googleapis.com/dagger-assets/sdxl_coke.zip
 # the zip file must just contain the images to fine tune the model on, and for each image file foo.jpg a foo.txt file containing a descriptive caption of the image
